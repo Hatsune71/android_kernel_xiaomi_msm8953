@@ -21,6 +21,7 @@ module_param_named(suspend_defer_time, suspend_defer_time, uint, 0664);
 static struct delayed_work suspend_work;
 static struct workqueue_struct *susp_wq;
 struct work_struct resume_work;
+struct work_struct boost_work;
 bool state_suspended;
 module_param_named(state_suspended, state_suspended, bool, 0444);
 static bool suspend_in_progress;
@@ -72,6 +73,12 @@ static void _resume_work(struct work_struct *work)
 	state_notifier_call_chain(STATE_NOTIFIER_ACTIVE, NULL);
 }
 
+static void _boost_work(struct work_struct *work)
+{
+	state_suspended = false;
+	state_notifier_call_chain(STATE_NOTIFIER_BOOST, NULL);
+}
+
 void state_suspend(void)
 {
 	if (state_suspended || suspend_in_progress)
@@ -93,6 +100,16 @@ void state_resume(void)
 		queue_work(susp_wq, &resume_work);
 }
 
+void state_boost(void)
+{
+	if (delayed_work_pending(&suspend_work))
+		cancel_delayed_work_sync(&suspend_work);
+	suspend_in_progress = false;
+
+	if (state_suspended)
+		queue_work(susp_wq, &boost_work);
+}
+
 static int __init state_notifier_init(void)
 {
 	susp_wq =
@@ -104,6 +121,7 @@ static int __init state_notifier_init(void)
 
 	INIT_DELAYED_WORK(&suspend_work, _suspend_work);
 	INIT_WORK(&resume_work, _resume_work);
+	INIT_WORK(&boost_work, _boost_work);
 
 	return 0;
 }
