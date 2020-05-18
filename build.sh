@@ -12,7 +12,7 @@ rm -rf zip
 echo -e "$green << cloning toolchain bish >> \n $white"
 git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9 -b lineage-17.1 /root/itsvixano/toolchain_64
 
-export LOCALVERSION=-r1.0-eas
+export LOCALVERSION=-r1.0
 
 export ARCH=arm64
 export SUBARCH=arm64
