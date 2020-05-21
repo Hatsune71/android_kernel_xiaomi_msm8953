@@ -28,6 +28,9 @@ echo -e "$green << doing pre-compiling process bish >> \n $white"
 
 make O=out clean && make O=out mrproper
 make ysl_defconfig O=out
+cp out/.config arch/arm64/configs/ysl_defconfig
+git add arch/arm64/configs/ysl_defconfig
+git commit -m "ysl_defconfig: regen"
 
 echo -e "$yellow << compiling kranul bish >> \n $white"
 
