@@ -1019,8 +1019,8 @@ static long snd_rawmidi_kernel_read1(struct snd_rawmidi_substream *substream,
 			}
 
 			spin_lock_irqsave(&runtime->lock, flags);
-			if (err)
-				goto out;
+			if (err) {
+				goto out; 
 		}
 		result += count1;
 		count -= count1;
